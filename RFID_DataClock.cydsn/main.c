@@ -11,22 +11,27 @@
 */
 #include "project.h"
 
-uint8 dataArray[256];
+uint16 dataArray[256];
 //uint8 testArray[1000];
 uint16 bitCount = 0;
 
 void displayData()
 {
-    UART_1_PutArray(dataArray,255);
+    //UART_1_PutArray(dataArray,255);
+    for(uint8 i=0;i<9;i+=1)
+    {
+        UART_1_WriteTxData(dataArray[i]);
+    }
+    //UART_1_PutString("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
 }
 
 CY_ISR(dataInterrupt)
 {
+    if(Data_Read() == 1) UART_1_PutString("0");
+    else UART_1_PutString("1");
+    /*
     dataArray[bitCount] = Data_Read();
-    
-    uint8 test1 = dataArray[bitCount];
-    uint16 test2 = bitCount;
-    bitCount+=1;
+    bitCount+=1;*/
     Clock_ClearInterrupt();
 }
 
@@ -38,6 +43,7 @@ int main(void)
     
     
     UART_1_Start();
+    PWM_1_Start();
     clockISR_StartEx(dataInterrupt);
     //UART_1_PutString("Started\n");
     for(;;)
@@ -50,8 +56,7 @@ int main(void)
             {
                 testArray[i] = dataArray[i];
             }*/
-            displayData();
-            uint16 test = bitCount;
+            //displayData();
             bitCount = 0;
         }
         
