@@ -11,21 +11,17 @@
 */
 #include "project.h"
 
-uint8 dataArray[1000];
+uint8 dataArray[256];
+//uint8 testArray[1000];
 uint16 bitCount = 0;
-uint16 num = 0x30;
 
 void displayData()
 {
-    UART_1_PutArray(dataArray,8);
+    UART_1_PutArray(dataArray,255);
 }
 
 CY_ISR(dataInterrupt)
 {
-    //UART_1_PutString("\nInterrupted");
-    //UART_1_WriteTxData(num);
-    //UART_1_PutString("\n");
-    //num+=1;
     dataArray[bitCount] = Data_Read();
     
     uint8 test1 = dataArray[bitCount];
@@ -43,14 +39,19 @@ int main(void)
     
     UART_1_Start();
     clockISR_StartEx(dataInterrupt);
-    UART_1_PutString("Started\n");
+    //UART_1_PutString("Started\n");
     for(;;)
     {
-        uint16 test = bitCount;
+        
         /* Place your application code here. */
-        if(bitCount >= 1)
-        {
+        if(bitCount >= 96)
+        {   
+            /*for(uint16 i=0; i>1001; i+=1)
+            {
+                testArray[i] = dataArray[i];
+            }*/
             displayData();
+            uint16 test = bitCount;
             bitCount = 0;
         }
         
