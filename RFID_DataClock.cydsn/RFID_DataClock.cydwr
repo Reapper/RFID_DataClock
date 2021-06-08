@@ -254,6 +254,7 @@
       <Data key="6d2675a7-0d07-41d9-8a7d-9ed9a390b212" value="Clock" />
       <Data key="8d318d8b-cf7b-4b6b-b02c-ab1c5c49d0ba" value="Code" />
       <Data key="1425177d-0d0e-4468-8bcc-e638e5509a9b" value="Rx_1" />
+      <Data key="77715107-f8d5-47e5-a629-0fb83101ac6b" value="Pin_1" />
       <Data key="ed092b9b-d398-4703-be89-cebf998501f6" value="Tx_1" />
       <Data key="f6dc8b80-e016-40b5-ae95-ae4a2e8503f1" value="Data" />
     </Group>
@@ -3344,7 +3345,7 @@
   <Group key="Pin2">
     <Group key="6d2675a7-0d07-41d9-8a7d-9ed9a390b212">
       <Group key="0">
-        <Data key="Port Format" value="4,4" />
+        <Data key="Port Format" value="12,2" />
       </Group>
     </Group>
     <Group key="8d318d8b-cf7b-4b6b-b02c-ab1c5c49d0ba">
@@ -3355,6 +3356,11 @@
     <Group key="1425177d-0d0e-4468-8bcc-e638e5509a9b">
       <Group key="0">
         <Data key="Port Format" value="0,0" />
+      </Group>
+    </Group>
+    <Group key="77715107-f8d5-47e5-a629-0fb83101ac6b">
+      <Group key="0">
+        <Data key="Port Format" value="4,1" />
       </Group>
     </Group>
     <Group key="ed092b9b-d398-4703-be89-cebf998501f6">

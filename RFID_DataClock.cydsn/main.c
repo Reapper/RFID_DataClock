@@ -22,12 +22,15 @@ void displayData()
 
 CY_ISR(dataInterrupt)
 {
-    UART_1_PutString("Interrupted");
-    UART_1_WriteTxData(num);
-    UART_1_PutString(" \n");
-    num+=1;
+    //UART_1_PutString("\nInterrupted");
+    //UART_1_WriteTxData(num);
+    //UART_1_PutString("\n");
+    //num+=1;
     dataArray[bitCount] = Data_Read();
-    bitCount++;
+    
+    uint8 test1 = dataArray[bitCount];
+    uint16 test2 = bitCount;
+    bitCount+=1;
     Clock_ClearInterrupt();
 }
 
@@ -45,7 +48,7 @@ int main(void)
     {
         uint16 test = bitCount;
         /* Place your application code here. */
-        if(bitCount > 35)
+        if(bitCount >= 1)
         {
             displayData();
             bitCount = 0;
