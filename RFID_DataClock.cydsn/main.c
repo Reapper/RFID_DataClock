@@ -50,15 +50,15 @@ int main(void)
     {
         
         /* Place your application code here. */
-        if(bitCount >= 96)
+       /* if(bitCount >= 96)
         {   
-            /*for(uint16 i=0; i>1001; i+=1)
+            for(uint16 i=0; i>1001; i+=1)
             {
                 testArray[i] = dataArray[i];
-            }*/
+            }
             //displayData();
             bitCount = 0;
-        }
+        }*/
         
     }
 }
