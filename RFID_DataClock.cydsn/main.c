@@ -11,27 +11,33 @@
 */
 #include "project.h"
 
-uint16 dataArray[256];
-//uint8 testArray[1000];
+uint8 dataArray[96];
+uint8 *dataPointer = NULL;
 uint16 bitCount = 0;
 
-void displayData()
+void sendData(uint8 array[], uint8 arrayLenght)
 {
-    //UART_1_PutArray(dataArray,255);
-    for(uint8 i=0;i<9;i+=1)
+    uint8 i;
+ 
+    for (i = 0 ; i <= arrayLenght ; i++)
     {
-        UART_1_WriteTxData(dataArray[i]);
+        UART_1_WriteTxData(array[i]);
+        
     }
-    //UART_1_PutString("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
 }
 
 CY_ISR(dataInterrupt)
 {
-    if(Data_Read() == 1) UART_1_PutString("0");
-    else UART_1_PutString("1");
-    /*
-    dataArray[bitCount] = Data_Read();
-    bitCount+=1;*/
+    if(Data_Read() == 1)
+    {
+        dataArray[bitCount] = 0;
+        //UART_1_PutString("0");
+    } else {
+        //UART_1_PutString("1");
+        dataArray[bitCount] = 1;
+    }
+    
+    bitCount+=1;
     Clock_ClearInterrupt();
 }
 
@@ -45,21 +51,44 @@ int main(void)
     UART_1_Start();
     PWM_1_Start();
     clockISR_StartEx(dataInterrupt);
-    //UART_1_PutString("Started\n");
+
     for(;;)
     {
-        
         /* Place your application code here. */
-       /* if(bitCount >= 96)
-        {   
-            for(uint16 i=0; i>1001; i+=1)
+        if(bitCount >= 96)
+        {
+            uint8 binaryNumber[4];
+            char codeArray[7];
+            uint8 number;
+            char charNumber;
+            // pour chaque chiffre de l'ID
+            for(uint8 n=0; n<7; n+=1)
             {
-                testArray[i] = dataArray[i];
+                // crée un tableau de bits pour 1 chiffre
+                for(uint8 i=0; i<5; i+=1)
+                {
+                    binaryNumber[i] = dataArray[59+i+(n*5)];
+                }
+                // transforme le binaire en décimal
+                uint8 j=1;
+                for(uint8 k=0; k<5; k+=1)
+                {
+                    number += binaryNumber[k]*j;
+                    j*=2;
+                }
+
+                charNumber = number;
+                    
+                UART_1_WriteTxData(number);
+                 //   codeArray[i] = number;
+                 //   dataPointer = codeArray;
+                
             }
-            //displayData();
+            
+            
+            //sendData(codeArray,7);
             bitCount = 0;
-        }*/
-        
+        }
     }
 }
 
