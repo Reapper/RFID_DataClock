@@ -67,8 +67,9 @@ int main(void)
     CyGlobalIntEnable; // Enable global interrupts.
     
     UART_1_Start();
-    PWM_1_Start();
     clockISR_StartEx(dataInterrupt);
+    GreenLED_Write(FALSE);
+    RedLED_Write(FALSE);
 
     for(;;)
     {
@@ -79,6 +80,8 @@ int main(void)
             uint8 codeArray[ID_NUMBERS];                // Tableau de char pour l'envoie sur le port série
             uint16 number = 0;                          // Variable pour le resultat du nombre binaire
             uint8 failed = FALSE;                       // Varaible de test en cas de mauvaise lecture
+            
+            
             
             // Pour chaque chiffre de l'ID
             for(uint8 n=0; n<ID_NUMBERS; n+=1)
@@ -110,8 +113,17 @@ int main(void)
             } // END for(uint8 n=0; n<7; n+=1)
             
             // Envoie sur le port série si le test est OK
-            if(!failed && !BINMODE) UART_1_PutArray(codeArray,ID_NUMBERS);
-            else if(!BINMODE) UART_1_PutString("FAILED"); // Envoie "FAILED" dans le cas contraire
+            if(!failed && !BINMODE)
+            {
+                UART_1_PutArray(codeArray,ID_NUMBERS);
+                GreenLED_Write(TRUE);
+                RedLED_Write(FALSE);
+            } else { 
+                if(!BINMODE) UART_1_PutString("FAILED"); // Envoie "FAILED" dans le cas contraire
+                
+                GreenLED_Write(FALSE);
+                RedLED_Write(TRUE);
+            }
             
             // \n(0x0D) en fin de d'affichage des bits
             if(BINMODE && CONSOLE_CTRL)UART_1_PutChar(NEWLINE);

@@ -109,14 +109,12 @@
           <File BuildType="BUILD" Toolchain="">Generated_Source\PSoC5\cycodeshareimport.scat</File>
           <File BuildType="BUILD" Toolchain="">Generated_Source\PSoC5\clockISR.c</File>
           <File BuildType="BUILD" Toolchain="">Generated_Source\PSoC5\clockISR.h</File>
-          <File BuildType="BUILD" Toolchain="">Generated_Source\PSoC5\PWM_1.c</File>
-          <File BuildType="BUILD" Toolchain="">Generated_Source\PSoC5\PWM_1.h</File>
-          <File BuildType="BUILD" Toolchain="">Generated_Source\PSoC5\PWM_1_PM.c</File>
-          <File BuildType="BUILD" Toolchain="">Generated_Source\PSoC5\Clock_1.c</File>
-          <File BuildType="BUILD" Toolchain="">Generated_Source\PSoC5\Clock_1.h</File>
-          <File BuildType="BUILD" Toolchain="">Generated_Source\PSoC5\Pin_1_aliases.h</File>
-          <File BuildType="BUILD" Toolchain="">Generated_Source\PSoC5\Pin_1.c</File>
-          <File BuildType="BUILD" Toolchain="">Generated_Source\PSoC5\Pin_1.h</File>
+          <File BuildType="BUILD" Toolchain="">Generated_Source\PSoC5\GreenLED_aliases.h</File>
+          <File BuildType="BUILD" Toolchain="">Generated_Source\PSoC5\GreenLED.c</File>
+          <File BuildType="BUILD" Toolchain="">Generated_Source\PSoC5\GreenLED.h</File>
+          <File BuildType="BUILD" Toolchain="">Generated_Source\PSoC5\RedLED_aliases.h</File>
+          <File BuildType="BUILD" Toolchain="">Generated_Source\PSoC5\RedLED.c</File>
+          <File BuildType="BUILD" Toolchain="">Generated_Source\PSoC5\RedLED.h</File>
         </Files>
       </Folder>
       <Folder BuildType="STRICT" Path="C:\Users\PC PESAGE\Documents\PSoC Creator\RFID_DataClock\RFID_DataClock.cydsn\Export\ARM_GCC_Generic">
