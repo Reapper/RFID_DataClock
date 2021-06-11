@@ -19,9 +19,9 @@
 #define FALSE 0
 #include "project.h"
 
-/// *** DEFINES *** ///
+/// *** OPTIONS *** ///
 
-// Active la transmission en mode binaire
+// Active la transmission des données en mode binaire ASCII
 //#define BINMODE TRUE
 #define BINMODE FALSE
 
@@ -32,6 +32,9 @@
 // Definis le nombre de bits de la trame
 #define BITSMAX 96 // Pour 13 Carateres
 //#define BITSMAX 80 // Pour 10 Caracters
+
+// Nombre de carateres a afficher en partant de la fin
+#define ID_NUMBERS 6
 
 #define NEWLINE 0x0D
 
@@ -71,14 +74,14 @@ int main(void)
     {
         if(bitCount >= BITSMAX)
         {
-            uint8 binaryNumber[4];  // Tableau de 4 bits
-            uint16 index = 56;      // Index de la trame pour le premier chiffre
-            uint8 codeArray[7];     // Tableau de char pour l'envoie sur le port série
-            uint8 number = 0;       // Variable pour le resultat du nombre binaire
-            uint8 failed = FALSE;   // Varaible de test en cas de mauvaise lecture
+            uint8 binaryNumber[4];                      // Tableau de 4 bits
+            uint16 index = (BITSMAX-10)-(ID_NUMBERS*5); // Index de la trame pour le premier chiffre
+            uint8 codeArray[ID_NUMBERS];                // Tableau de char pour l'envoie sur le port série
+            uint16 number = 0;                          // Variable pour le resultat du nombre binaire
+            uint8 failed = FALSE;                       // Varaible de test en cas de mauvaise lecture
             
             // Pour chaque chiffre de l'ID
-            for(uint8 n=0; n<6; n+=1)
+            for(uint8 n=0; n<ID_NUMBERS; n+=1)
             {
                 // Créé un tableau de bits pour 1 chiffre
                 for(uint8 i=0; i<4; i+=1)
@@ -107,7 +110,7 @@ int main(void)
             } // END for(uint8 n=0; n<7; n+=1)
             
             // Envoie sur le port série si le test est OK
-            if(!failed && !BINMODE)UART_1_PutArray(codeArray,7);
+            if(!failed && !BINMODE) UART_1_PutArray(codeArray,ID_NUMBERS);
             else if(!BINMODE) UART_1_PutString("FAILED"); // Envoie "FAILED" dans le cas contraire
             
             // \n(0x0D) en fin de d'affichage des bits
@@ -119,7 +122,7 @@ int main(void)
             bitCount = 0;
             failed = FALSE;
         } // END if(bitCount >= BITSMAX)
-    }
-}
-/**/
+    } // END for(;;)
+} // END int main(void)
+
 /* [] END OF FILE */
