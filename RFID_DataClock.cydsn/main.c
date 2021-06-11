@@ -9,7 +9,14 @@
  *
  * ========================================
 */
+
 #include "project.h"
+
+#define BINMODE 0
+#define CONSOLECONTROLE 1
+#define BITSMAX 96
+
+#define NEWLINE 0x0D
 
 uint8 dataArray[96];
 uint8 *dataPointer = NULL;
@@ -31,21 +38,21 @@ CY_ISR(dataInterrupt)
     if(Data_Read() == 1)
     {
         dataArray[bitCount] = 0;
-        //UART_1_PutString("0");
+        if(BINMODE == 1)UART_1_PutString("0");
     } else {
-        //UART_1_PutString("1");
+        if(BINMODE == 1)UART_1_PutString("1");
         dataArray[bitCount] = 1;
     }
-    
+    if(bitCount >= BITSMAX-1 && BINMODE == 1)UART_1_PutString("000000000000000\n");
     bitCount+=1;
     Clock_ClearInterrupt();
 }
 
 int main(void)
 {
-    CyGlobalIntEnable; /* Enable global interrupts. */
+    CyGlobalIntEnable; // Enable global interrupts.
 
-    /* Place your initialization/startup code here (e.g. MyInst_Start()) */
+    //Place your initialization/startup code here (e.g. MyInst_Start())
     
     
     UART_1_Start();
@@ -54,42 +61,53 @@ int main(void)
 
     for(;;)
     {
-        /* Place your application code here. */
-        if(bitCount >= 96)
+        //Place your application code here.
+        if(bitCount >= BITSMAX)
         {
             uint8 binaryNumber[4];
-            char codeArray[7];
-            uint8 number;
-            char charNumber;
+            uint16 index = 56;
+            uint8 codeArray[7];
+            uint8 number=0;
+            uint8 failed = 0;
+            
             // pour chaque chiffre de l'ID
-            for(uint8 n=0; n<7; n+=1)
+            for(uint8 n=0; n<6; n+=1)
             {
                 // crée un tableau de bits pour 1 chiffre
-                for(uint8 i=0; i<5; i+=1)
+                
+                for(uint8 i=0; i<4; i+=1)
                 {
-                    binaryNumber[i] = dataArray[59+i+(n*5)];
-                }
+                    binaryNumber[i] = dataArray[index];
+                    index += 1;
+                } // END for(uint8 i=0; i<4; i+=1)
+                
+                index = index + 1;
+                
                 // transforme le binaire en décimal
                 uint8 j=1;
-                for(uint8 k=0; k<5; k+=1)
+                for(uint8 k=0; k<4; k+=1)
                 {
                     number += binaryNumber[k]*j;
                     j*=2;
-                }
-
-                charNumber = number;
-                    
-                UART_1_WriteTxData(number);
-                 //   codeArray[i] = number;
-                 //   dataPointer = codeArray;
+                } // END for(uint8 k=0; k<4; k+=1)
+                                
+                if(number >= 0 && number <= 9) codeArray[n] = number+0x30;
+                else failed = 1;
                 
-            }
+                number = 0;
+                
+            } // END for(uint8 n=0; n<7; n+=1)
+            
+            if(failed != 1 && BINMODE != 1)UART_1_PutArray(codeArray,7);
+            //else UART_1_PutString("FAILED");
+            CyDelay(1);
             
             
-            //sendData(codeArray,7);
+            
             bitCount = 0;
-        }
+            failed = 0;
+        } // END if(bitCount >= BITSMAX)
     }
 }
-
+/**/
 /* [] END OF FILE */
