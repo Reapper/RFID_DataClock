@@ -6,7 +6,7 @@
 *.cycdx
 *.gsvd
 *.html
-*.pdf
+#*.pdf
 *.rpt
 *.log
 */ComponentUpdateLog.txt
