@@ -1,59 +1,67 @@
 /* ========================================
  *
- * Copyright YOUR COMPANY, THE YEAR
+ * RFID Reader/tester
+ *
+ * Copyright Pesage du Sud-Ouest, 2021
  * All Rights Reserved
  * UNPUBLISHED, LICENSED SOFTWARE.
  *
  * CONFIDENTIAL AND PROPRIETARY INFORMATION
- * WHICH IS THE PROPERTY OF your company.
+ * WHICH IS THE PROPERTY OF Pesage du Sud-Ouest.
+ *
+ * Developped by : Axel Marceau
+ *        GitHub : https://github.com/Reapper
+ *          Mail : axel@e-marceau.com
  *
  * ========================================
 */
-
+#define TRUE 1
+#define FALSE 0
 #include "project.h"
 
-#define BINMODE 0
-#define CONSOLECONTROLE 1
-#define BITSMAX 96
+/// *** DEFINES *** ///
+
+// Active la transmission en mode binaire
+//#define BINMODE TRUE
+#define BINMODE FALSE
+
+// Saut de ligne pour l'affichage des données dans une console
+//#define CONSOLE_CTRL TRUE
+#define CONSOLE_CTRL FALSE
+
+// Definis le nombre de bits de la trame
+#define BITSMAX 96 // Pour 13 Carateres
+//#define BITSMAX 80 // Pour 10 Caracters
 
 #define NEWLINE 0x0D
 
-uint8 dataArray[96];
-uint8 *dataPointer = NULL;
-uint16 bitCount = 0;
+/// *** GLOBALS VARS *** ///
+uint8 dataArray[96];    // Tableau de la trame
+uint16 bitCount = 0;    // Compte le nombre bits
 
-void sendData(uint8 array[], uint8 arrayLenght)
-{
-    uint8 i;
- 
-    for (i = 0 ; i <= arrayLenght ; i++)
-    {
-        UART_1_WriteTxData(array[i]);
-        
-    }
-}
-
+// Fonction faite lors d'une interruption
 CY_ISR(dataInterrupt)
 {
+    // Lecture bit a bit de la trame, ajout dans un tableau
     if(Data_Read() == 1)
     {
-        dataArray[bitCount] = 0;
-        if(BINMODE == 1)UART_1_PutString("0");
+        if(BINMODE)UART_1_PutString("0"); // Affichage binaire
+        else dataArray[bitCount] = 0;
     } else {
-        if(BINMODE == 1)UART_1_PutString("1");
-        dataArray[bitCount] = 1;
+        if(BINMODE)UART_1_PutString("1");
+        else dataArray[bitCount] = 1;
     }
-    if(bitCount >= BITSMAX-1 && BINMODE == 1)UART_1_PutString("000000000000000\n");
+    // Ajout de 16 "0" non traité par l'interruption
+    // car la Clock s'arrete lors du 1er bit de stop
+    if(bitCount >= BITSMAX-1 && BINMODE)UART_1_PutString("000000000000000");
     bitCount+=1;
+    // Rearme l'interruption
     Clock_ClearInterrupt();
 }
 
 int main(void)
 {
     CyGlobalIntEnable; // Enable global interrupts.
-
-    //Place your initialization/startup code here (e.g. MyInst_Start())
-    
     
     UART_1_Start();
     PWM_1_Start();
@@ -61,51 +69,55 @@ int main(void)
 
     for(;;)
     {
-        //Place your application code here.
         if(bitCount >= BITSMAX)
         {
-            uint8 binaryNumber[4];
-            uint16 index = 56;
-            uint8 codeArray[7];
-            uint8 number=0;
-            uint8 failed = 0;
+            uint8 binaryNumber[4];  // Tableau de 4 bits
+            uint16 index = 56;      // Index de la trame pour le premier chiffre
+            uint8 codeArray[7];     // Tableau de char pour l'envoie sur le port série
+            uint8 number = 0;       // Variable pour le resultat du nombre binaire
+            uint8 failed = FALSE;   // Varaible de test en cas de mauvaise lecture
             
-            // pour chaque chiffre de l'ID
+            // Pour chaque chiffre de l'ID
             for(uint8 n=0; n<6; n+=1)
             {
-                // crée un tableau de bits pour 1 chiffre
-                
+                // Créé un tableau de bits pour 1 chiffre
                 for(uint8 i=0; i<4; i+=1)
                 {
                     binaryNumber[i] = dataArray[index];
                     index += 1;
                 } // END for(uint8 i=0; i<4; i+=1)
                 
+                // Incrementation pour passer le bit de parité
                 index = index + 1;
                 
-                // transforme le binaire en décimal
+                // Transforme le binaire en décimal
                 uint8 j=1;
                 for(uint8 k=0; k<4; k+=1)
                 {
                     number += binaryNumber[k]*j;
                     j*=2;
                 } // END for(uint8 k=0; k<4; k+=1)
-                                
-                if(number >= 0 && number <= 9) codeArray[n] = number+0x30;
-                else failed = 1;
                 
+                // Teste si le caratere enregistré en bien un chiffre
+                if(number >= 0 && number <= 9) codeArray[n] = number+0x30; // n+0x30 pour l'obtenir en ASCII
+                else failed = TRUE;
+                
+                // RAZ de la variable pour le prochain chiffre
                 number = 0;
-                
             } // END for(uint8 n=0; n<7; n+=1)
             
-            if(failed != 1 && BINMODE != 1)UART_1_PutArray(codeArray,7);
-            //else UART_1_PutString("FAILED");
-            CyDelay(1);
+            // Envoie sur le port série si le test est OK
+            if(!failed && !BINMODE)UART_1_PutArray(codeArray,7);
+            else if(!BINMODE) UART_1_PutString("FAILED"); // Envoie "FAILED" dans le cas contraire
             
+            // \n(0x0D) en fin de d'affichage des bits
+            if(BINMODE && CONSOLE_CTRL)UART_1_PutChar(NEWLINE);
             
+            //CyDelay(1);
             
+            // RAZ des variable pour la prochaine lecture
             bitCount = 0;
-            failed = 0;
+            failed = FALSE;
         } // END if(bitCount >= BITSMAX)
     }
 }
