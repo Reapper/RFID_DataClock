@@ -54,7 +54,7 @@ CY_ISR(dataInterrupt)
         if(BINMODE)UART_1_PutString("1");
         else dataArray[bitCount] = 1;
     }
-    // Ajout de 16 "0" non traité par l'interruption
+    // Ajout de 15 "0" non traité par l'interruption
     // car la Clock s'arrete lors du 1er bit de stop
     if(bitCount >= BITSMAX-1 && BINMODE)UART_1_PutString("000000000000000");
     bitCount+=1;
@@ -75,11 +75,11 @@ int main(void)
     {
         if(bitCount >= BITSMAX)
         {
-            uint8 binaryNumber[4];                      // Tableau de 4 bits
-            uint16 index = (BITSMAX-10)-(ID_NUMBERS*5); // Index de la trame pour le premier chiffre
-            uint8 codeArray[ID_NUMBERS];                // Tableau de char pour l'envoie sur le port série
-            uint16 number = 0;                          // Variable pour le resultat du nombre binaire
-            uint8 failed = FALSE;                       // Varaible de test en cas de mauvaise lecture
+            uint8 binaryNumber[4];//---------------------- Tableau de 4 bits
+            uint16 index = (BITSMAX-10)-(ID_NUMBERS*5);//- Index de la trame pour le premier chiffre
+            uint8 codeArray[ID_NUMBERS];//---------------- Tableau de char pour l'envoie sur le port série
+            uint16 number = 0;//-------------------------- Variable pour le resultat du nombre binaire
+            uint8 failed = FALSE;//----------------------- Varaible de test en cas de mauvaise lecture
             
             
             
@@ -112,7 +112,7 @@ int main(void)
                 number = 0;
             } // END for(uint8 n=0; n<7; n+=1)
             
-            // Envoie sur le port série si le test est OK
+            // Envoie le code du badges sur le port série si le test est OK
             if(!failed && !BINMODE)
             {
                 UART_1_PutArray(codeArray,ID_NUMBERS);
@@ -125,8 +125,8 @@ int main(void)
                 RedLED_Write(TRUE);
             }
             
-            // \n(0x0D) en fin de d'affichage des bits
-            if(BINMODE && CONSOLE_CTRL)UART_1_PutChar(NEWLINE);
+            // \n(0x0D) en fin de d'affichage de la lecture
+            if(CONSOLE_CTRL)UART_1_PutChar(NEWLINE);
             
             //CyDelay(1);
             
