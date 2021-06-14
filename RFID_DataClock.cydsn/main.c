@@ -119,7 +119,7 @@ int main(void)
                 GreenLED_Write(TRUE);
                 RedLED_Write(FALSE);
             } else { 
-                if(!BINMODE) UART_1_PutString("FAILED"); // Envoie "FAILED" dans le cas contraire
+                UART_1_PutString("FAILED"); // Envoie "FAILED" dans le cas contraire
                 
                 GreenLED_Write(FALSE);
                 RedLED_Write(TRUE);
